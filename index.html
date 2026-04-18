@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+h<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -12,7 +12,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Source Sans 3',-apple-system,sans-serif;background:#fafaf8;color:#111;-webkit-font-smoothing:antialiased}
+body{font-family:'Source Sans 3',-apple-system,sans-serif;bhackground:#fafaf8;color:#111;-webkit-font-smoothing:antialiased}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -320,7 +320,7 @@ function App(){
               </button>
               {open&&<Chart op={p.o} np={p.p} id={p.a}/>}
 
-              <a href={`https://www.amazon.com/dp/${p.a}?tag=fitzone05a-20`} target="_blank" rel="nofollow noopener" className="cta-btn"
+              <a href={`https://www.amazon.com/s?k=${encodeURIComponent(p.n)}&tag=fitzone05a-20`} target="_blank" rel="nofollow noopener" className="cta-btn"
                 style={{display:"flex",alignItems:"center",justifyContent:"center",gap:5,margin:"0 14px 14px",padding:"11px",background:"#111",color:"#fff",borderRadius:7,fontSize:".82rem",fontWeight:800,textDecoration:"none",transition:"background .2s"}}>
                 View Deal on Amazon →
               </a>
