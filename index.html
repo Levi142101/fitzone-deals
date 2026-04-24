@@ -1,369 +1,256 @@
-h<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FitZone — Best Fitness Deals on Amazon</title>
-<meta name="description" content="50+ verified fitness deals on Amazon. Price-tracked, updated daily. Save on gym equipment, supplements, wearables & more.">
+<title>BookVault — Curated Book Picks</title>
+<meta name="description" content="Handpicked book recommendations at every price point. Find your next great read.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Source Sans 3',-apple-system,sans-serif;bhackground:#fafaf8;color:#111;-webkit-font-smoothing:antialiased}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
-@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.card:hover{transform:translateY(-3px)!important;box-shadow:0 10px 32px rgba(0,0,0,.08)!important}
-.cta-btn:hover{background:#ff3b30!important}
-input:focus{border-color:#ff3b30!important;outline:none}
-.prod-img{width:130px;min-height:140px;flex-shrink:0;background-size:cover;background-position:center;position:relative;overflow:hidden}
-.prod-img::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.08),rgba(0,0,0,.25))}
+body{font-family:'Inter',-apple-system,sans-serif;background:#faf8f5;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+::selection{background:#d4a574;color:#fff}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.book-card:hover{transform:translateY(-6px)!important;box-shadow:0 20px 50px rgba(0,0,0,.12)!important}
+.cta:hover{background:#1a1a1a!important;color:#fff!important}
+input:focus{border-color:#d4a574!important;outline:none}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const {useState,useMemo}=React;
+const {useState} = React;
 
-/* ── Unsplash images per category ── */
-const IMGS={
-  wearables:[
-    "photo-1579586337278-3befd40fd17a",
-    "photo-1508685096489-7aacd43bd3b1",
-    "photo-1617043786394-f977fa12eddf",
-    "photo-1551816230-ef5deaed4a26",
-    "photo-1575311373937-040b8e1fd5b6",
-    "photo-1523275335684-37898b6baf30"
-  ],
-  equipment:[
-    "photo-1534438327276-14e5300c3a48",
-    "photo-1583454110551-21f2fa2afe61",
-    "photo-1526506118085-60ce8714f8c5",
-    "photo-1581009146145-b5ef050c2e1e",
-    "photo-1605296867304-46d5465a13f1",
-    "photo-1517963879433-6ad2b056d712",
-    "photo-1574680096145-d05b474e2155",
-    "photo-1598289431512-b97b0917affc",
-    "photo-1571902943202-507ec2618e8f",
-    "photo-1540497077202-7c8a3999166f",
-    "photo-1596357395217-80de13130e92",
-    "photo-1597452485669-2c7bb5fef90d"
-  ],
-  supplements:[
-    "photo-1593095948071-474c5cc2c111",
-    "photo-1612532275235-8fc0de187c30",
-    "photo-1616070698320-27db4f1ff3a0",
-    "photo-1594498653385-d5533f61b6ef",
-    "photo-1579722821273-0f6c4b80b1d6",
-    "photo-1622818425903-8e3358d88e53",
-    "photo-1517433670267-08bbd4be890f",
-    "photo-1532550907401-a500c9a57435"
-  ],
-  recovery:[
-    "photo-1600881333168-2ef49b341f30",
-    "photo-1544367567-0f2fcb009e0b",
-    "photo-1517836357463-d25dfeac3438",
-    "photo-1518611012118-696072aa579a",
-    "photo-1573821663912-569905455b1c",
-    "photo-1616803689943-5601631c7fec"
-  ],
-  yoga:[
-    "photo-1506126613408-eca07ce68773",
-    "photo-1544367567-0f2fcb009e0b",
-    "photo-1545389336-cf090694435e",
-    "photo-1575052814086-f385e2e2ad33",
-    "photo-1588286840104-8957b019727f"
-  ],
-  nutrition:[
-    "photo-1490645935967-10de6ba17061",
-    "photo-1498837167922-ddd27525d352",
-    "photo-1505576399279-0d754b0d3df0",
-    "photo-1512621776951-a57141f2eefd",
-    "photo-1493770348161-369560ae357d"
-  ],
-  apparel:[
-    "photo-1542291026-7eec264c27ff",
-    "photo-1556906781-9a412961c28c",
-    "photo-1515955656352-a1fa3ffcd111",
-    "photo-1606107557195-0e29a4b5b4aa"
-  ],
-  cardio:[
-    "photo-1517836357463-d25dfeac3438",
-    "photo-1591258370814-01f56aeb1f34",
-    "photo-1576678927484-cc907957088c"
-  ]
-};
-function getImg(cat,idx){
-  const arr=IMGS[cat]||IMGS.equipment;
-  const id=arr[idx%arr.length];
-  return `https://images.unsplash.com/${id}?w=300&h=300&fit=crop&auto=format&q=75`;
-}
-
-/* ── Price Chart ── */
-function Chart({op,np,id}){
-  const s=id?id.split("").reduce((a,c)=>a+c.charCodeAt(0),0):42;
-  const rng=(i)=>Math.sin(s*0.13+i*0.71)*0.5+0.5;
-  const pts=useMemo(()=>{
-    const r=op-np,a=[];
-    for(let i=0;i<=20;i++){
-      const t=i/20,base=op-r*t*0.3,n=rng(i)*r*0.22;
-      let y=base+n+(i===5?r*0.12:i===14?-r*0.18:0);
-      if(i>=17)y=np+r*0.08*rng(i+7);
-      if(i===20)y=np;
-      a.push(Math.max(np*0.92,Math.min(op*1.04,y)));
-    }
-    return a;
-  },[op,np,id]);
-  const W=260,H=60,p=4;
-  const mn=Math.min(...pts)*0.97,mx=Math.max(...pts)*1.02;
-  const sx=i=>p+(i/20)*(W-p*2);
-  const sy=v=>p+(1-(v-mn)/(mx-mn))*(H-p*2);
-  const ln=pts.map((v,i)=>`${i?"L":"M"}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`).join(" ");
-  return(
-    <div style={{padding:"10px 14px",background:"#f8f7f4",borderTop:"1px solid #eee"}}>
-      <div style={{display:"flex",justifyContent:"space-between",fontSize:".63rem",color:"#bbb",marginBottom:4}}><span>90 days ago</span><span>Today</span></div>
-      <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:56}}>
-        <defs><linearGradient id={`g${id}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ff3b30" stopOpacity=".12"/><stop offset="100%" stopColor="#ff3b30" stopOpacity=".01"/></linearGradient></defs>
-        <path d={ln+` L${sx(20).toFixed(1)},${H} L${sx(0).toFixed(1)},${H} Z`} fill={`url(#g${id})`}/>
-        <path d={ln} fill="none" stroke="#ff3b30" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        <circle cx={sx(20)} cy={sy(np)} r="3.5" fill="#ff3b30"/>
-        <line x1={p} y1={sy(op)} x2={W-p} y2={sy(op)} stroke="#ddd" strokeWidth=".8" strokeDasharray="3 2"/>
-        <text x={W-p} y={sy(op)-3} textAnchor="end" fontSize="7" fill="#ccc">${op.toFixed(0)}</text>
-        <text x={W-p-2} y={sy(np)+12} textAnchor="end" fontSize="8.5" fill="#ff3b30" fontWeight="bold">${np.toFixed(2)}</text>
-      </svg>
-      <div style={{display:"flex",gap:6,marginTop:6}}>
-        <a href={`https://camelcamelcamel.com/product/${id}`} target="_blank" rel="noopener" style={{flex:1,textAlign:"center",padding:6,background:"#fff",border:"1px solid #e5e2dc",borderRadius:5,fontSize:".66rem",fontWeight:700,color:"#555",textDecoration:"none"}}>🐪 CamelCamelCamel</a>
-        <a href={`https://keepa.com/#!product/1-${id}`} target="_blank" rel="noopener" style={{flex:1,textAlign:"center",padding:6,background:"#fff",border:"1px solid #e5e2dc",borderRadius:5,fontSize:".66rem",fontWeight:700,color:"#555",textDecoration:"none"}}>📈 Keepa</a>
-      </div>
-    </div>
-  );
-}
-
-/* ── Products ── */
-const P=[
-{id:1,c:"wearables",a:"B0CG6NR413",n:"Garmin Vívoactive 5 GPS Smartwatch",d:"AMOLED display, 11-day battery, 30+ sports, Body Battery, sleep coaching, HRV.",p:189.99,o:299.99,r:4.6,rv:28400,t:["AMOLED","11-day battery","GPS","30+ sports"],b:"37% OFF"},
-{id:2,c:"wearables",a:"B0CCSP8FN6",n:"Fitbit Charge 6 Fitness Tracker",d:"Built-in GPS, heart rate zones, stress management, 7-day battery, Google.",p:119.95,o:159.95,r:4.4,rv:18200,t:["Built-in GPS","Google","7-day battery","ECG"],b:"25% OFF"},
-{id:3,c:"wearables",a:"B0B5F1QJ6Q",n:"Fitbit Inspire 3 Health Tracker",d:"Color touchscreen, 10-day battery, 24/7 heart rate, SpO2, sleep stages.",p:69.95,o:99.95,r:4.3,rv:15800,t:["10-day battery","SpO2","Sleep stages","Slim"],b:"30% OFF"},
-{id:4,c:"wearables",a:"B0BS1TM1PS",n:"Garmin Forerunner 265 GPS Running Watch",d:"AMOLED, advanced training metrics, recovery advisor, race predictor, music.",p:344.95,o:449.99,r:4.7,rv:9800,t:["AMOLED","Music","Race predictor","Recovery"],b:"23% OFF"},
-{id:5,c:"wearables",a:"B0CHX3PBRX",n:"Apple Watch SE (2nd Gen) 40mm",d:"Health sensors, crash detection, swimproof. Apple Fitness+ integration.",p:189.00,o:249.00,r:4.7,rv:42100,t:["Apple Fitness+","Crash detect","Swimproof","Fall detect"],b:"24% OFF"},
-{id:6,c:"wearables",a:"B0CG6LLQX3",n:"Garmin Vívoactive 5 — Navy Edition",d:"AMOLED, 11 days, 30+ sports, Garmin Pay, music storage. Navy.",p:189.99,o:299.99,r:4.6,rv:28400,t:["Navy color","Garmin Pay","Music","HRV"],b:"37% OFF"},
-{id:7,c:"equipment",a:"B001ARYU58",n:"Bowflex SelectTech 552 Dumbbells",d:"Adjustable 5-52.5 lbs. Replaces 15 sets. Quick dial system.",p:349.00,o:429.00,r:4.7,rv:31200,t:["5-52.5 lbs","15 sets in 1","Quick dial","Compact"],b:"19% OFF"},
-{id:8,c:"equipment",a:"B074DZ9HJK",n:"Amazon Basics Adjustable Dumbbell Set",d:"Adjustable weight plates, textured handle, budget-friendly.",p:39.00,o:49.99,r:4.5,rv:32100,t:["Budget","Textured grip","Adjustable","Compact"],b:"22% OFF"},
-{id:9,c:"equipment",a:"B004MO9JBK",n:"CAP Barbell 150 lb Dumbbell Set + Rack",d:"5 pairs (5-25 lbs), A-frame rack, rubber coated hex.",p:149.99,o:199.99,r:4.6,rv:21400,t:["5-25 lb pairs","Rack","Rubber hex","Floor safe"],b:"25% OFF"},
-{id:10,c:"equipment",a:"B00K2TWFY0",n:"Yes4All Neoprene Dumbbell Set + Stand",d:"5 color-coded pairs (2-10 lbs). Neoprene. Stand included.",p:54.99,o:74.99,r:4.6,rv:28700,t:["5 pairs","Neoprene","Color coded","Stand"],b:"27% OFF"},
-{id:11,c:"equipment",a:"B01AVDVHTI",n:"Fit Simplify Resistance Bands (5 Pack)",d:"5 levels, natural latex, extra thick. Carry bag + guide.",p:10.95,o:15.99,r:4.5,rv:148000,t:["5 levels","148K reviews","Carry bag","Guide"],b:"32% OFF"},
-{id:12,c:"equipment",a:"B008YKHSGI",n:"CAP Barbell Flat Weight Bench",d:"500 lb capacity, steel frame, high-density foam.",p:39.00,o:49.99,r:4.5,rv:18700,t:["500 lb cap","Steel frame","HD foam","Versatile"],b:"22% OFF"},
-{id:13,c:"equipment",a:"B001EJMS6K",n:"Iron Gym Pull-Up Bar — Doorframe",d:"Heavy-duty steel, no screws, multi-grip positions.",p:28.00,o:34.99,r:4.4,rv:41200,t:["No screws","300 lb cap","Multi-grip","Quick"],b:"20% OFF"},
-{id:14,c:"equipment",a:"B0731B6GBT",n:"Amazon Basics Cast Iron Kettlebell 35 lb",d:"Solid cast iron, wide textured handle, flat bottom.",p:34.49,o:46.99,r:4.7,rv:22800,t:["Cast iron","Wide handle","Flat bottom","35 lb"],b:"27% OFF"},
-{id:15,c:"equipment",a:"B01N1RU2F3",n:"Survival & Cross Speed Jump Rope",d:"Steel cable, ball bearings, aluminum handles.",p:9.97,o:16.97,r:4.5,rv:34600,t:["Steel cable","Ball bearings","Aluminum","Light"],b:"41% OFF"},
-{id:16,c:"equipment",a:"B07837PXN7",n:"Whatafit Resistance Bands (150 lbs)",d:"Stackable to 150 lbs. Handles, ankle straps, door anchor.",p:27.00,o:39.99,r:4.5,rv:52800,t:["150 lbs","Door anchor","Ankle straps","Bag"],b:"33% OFF"},
-{id:17,c:"equipment",a:"B00SBEO102",n:"TRX All-in-One Suspension Trainer",d:"Full body bodyweight workout. Door + outdoor anchor.",p:99.95,o:149.95,r:4.7,rv:16400,t:["Full body","Bodyweight","Portable","Door mount"],b:"33% OFF"},
-{id:18,c:"equipment",a:"B078HDGG7K",n:"FLYBIRD Adjustable Weight Bench",d:"7 back + 3 seat positions. Folds flat. 620 lb cap.",p:119.99,o:169.99,r:4.5,rv:38200,t:["7 positions","Foldable","620 lb cap","Compact"],b:"29% OFF"},
-{id:19,c:"supplements",a:"B000QSNYGI",n:"Optimum Nutrition Gold Standard Whey 5 lb",d:"24g protein, 5.5g BCAAs. World's #1 whey protein.",p:62.99,o:75.99,r:4.7,rv:98500,t:["24g protein","5.5g BCAAs","#1 seller","Great taste"],b:"Best Seller"},
-{id:20,c:"supplements",a:"B094VHFM26",n:"GHOST Whey Protein — Chips Ahoy!",d:"25g protein, real cookie pieces. Gluten-free. Award-winning.",p:44.99,o:49.99,r:4.6,rv:22300,t:["25g protein","Real cookies","Gluten-free","Award"],b:"Top Rated"},
-{id:21,c:"supplements",a:"B00UPD0QI0",n:"Dymatize ISO100 Whey Isolate",d:"25g protein, 120 cal. Hydrolyzed for fast absorption.",p:31.99,o:39.99,r:4.6,rv:45200,t:["25g protein","120 cal","Fast absorb","Isolate"],b:"20% OFF"},
-{id:22,c:"supplements",a:"B07YJCCGVN",n:"Optimum Nutrition Plant Protein",d:"Pea, rice & fava bean blend. 24g protein, vegan.",p:25.00,o:34.00,r:4.4,rv:8900,t:["24g vegan","Plant blend","Low cal","Smooth"],b:"26% OFF"},
-{id:23,c:"supplements",a:"B002DYIZEO",n:"ON Micronized Creatine 120 Servings",d:"Micronized monohydrate, unflavored, 5g per serving.",p:25.48,o:35.99,r:4.7,rv:52400,t:["Micronized","120 srvs","5g/srv","Unflavored"],b:"29% OFF"},
-{id:24,c:"supplements",a:"B00AVUQJ3O",n:"Cellucor C4 Original Pre-Workout",d:"150mg caffeine, beta-alanine, creatine nitrate. 30 srv.",p:22.94,o:29.99,r:4.5,rv:76800,t:["150mg caffeine","Beta-alanine","30 srvs","Energy"],b:"23% OFF"},
-{id:25,c:"supplements",a:"B07GBNJ69X",n:"Transparent Labs Bulk Pre-Workout",d:"Clinical doses, no artificial sweeteners, 200mg caffeine.",p:49.99,o:54.99,r:4.5,rv:12400,t:["Clinical dose","No artificial","200mg caff","Clean"],b:"9% OFF"},
-{id:26,c:"supplements",a:"B08MKFNWHP",n:"RYSE Loaded Protein — Marshmallow",d:"25g whey isolate + concentrate, prebiotic fiber, MCTs.",p:39.97,o:49.99,r:4.5,rv:18600,t:["25g protein","Prebiotic","MCTs","27 srvs"],b:"20% OFF"},
-{id:27,c:"recovery",a:"B0BX7FVL5S",n:"Hyperice Hypervolt 2 Pro Massage Gun",d:"Quiet Glide tech, 5 speeds, 5 heads, Bluetooth.",p:229.00,o:329.00,r:4.7,rv:12600,t:["Quiet Glide","Bluetooth","5 speeds","Pro-grade"],b:"30% OFF"},
-{id:28,c:"recovery",a:"B0C5PSFF87",n:"Therabody TheraGun Relief",d:"Ergonomic triangle grip, 3 speeds, 120-min battery.",p:149.00,o:199.00,r:4.5,rv:8900,t:["Ergonomic","120 min","3 speeds","Quiet"],b:"25% OFF"},
-{id:29,c:"recovery",a:"B0040EGNIU",n:"TriggerPoint GRID Foam Roller 13\"",d:"Patented multi-density foam, rigid hollow core.",p:29.95,o:39.99,r:4.6,rv:38400,t:["Multi-density","Hollow core","13 inch","Durable"],b:"25% OFF"},
-{id:30,c:"recovery",a:"B00XM2MRGI",n:"Amazon Basics Foam Roller 36\"",d:"High-density EPP foam, 36\" full body. Lightweight.",p:17.49,o:24.99,r:4.5,rv:42100,t:["36 inch","High-density","EPP foam","Light"],b:"30% OFF"},
-{id:31,c:"recovery",a:"B0BMG88SS4",n:"BOB AND BRAD Massage Gun",d:"14mm amplitude, 5 speeds, 5 heads, Type-C.",p:59.99,o:89.99,r:4.5,rv:22800,t:["14mm deep","Type-C","5 speeds","Quiet"],b:"33% OFF"},
-{id:32,c:"recovery",a:"B09Y9F4FX1",n:"Chirp Wheel+ Back Pain Relief",d:"Targeted pressure along spine. 3 sizes.",p:39.99,o:49.99,r:4.4,rv:14600,t:["Back relief","3 sizes","Spine target","Ergonomic"],b:"20% OFF"},
-{id:33,c:"yoga",a:"B00452V2EM",n:"Manduka PRO Yoga Mat 6mm",d:"Lifetime guarantee, closed-cell, ultra-dense cushion.",p:92.00,o:120.00,r:4.7,rv:14200,t:["Lifetime warranty","6mm","Closed-cell","Dense"],b:"23% OFF"},
-{id:34,c:"yoga",a:"B07JN1GRV7",n:"Gaiam Essentials Yoga Block 2-Pack",d:"Supportive EVA foam, beveled edges. 62K+ reviews.",p:9.98,o:14.99,r:4.7,rv:62300,t:["2-pack","EVA foam","Beveled","62K reviews"],b:"33% OFF"},
-{id:35,c:"yoga",a:"B002BFUOV8",n:"Clever Yoga Strap 8ft Cotton",d:"D-ring buckle, machine washable. Flexibility & poses.",p:6.99,o:9.99,r:4.6,rv:18400,t:["8ft","Cotton","D-ring","Washable"],b:"30% OFF"},
-{id:36,c:"yoga",a:"B01LP0U5MU",n:"Gaiam Premium Yoga Mat 6mm",d:"Extra thick, non-toxic PVC, textured non-slip.",p:21.98,o:29.98,r:4.5,rv:48200,t:["6mm thick","Non-slip","Non-toxic","Textured"],b:"27% OFF"},
-{id:37,c:"yoga",a:"B07R4PCLBB",n:"IUGA Pro Non-Slip Yoga Mat",d:"Alignment lines, eco TPE, carry strap. 72\"x26\".",p:25.99,o:35.99,r:4.6,rv:28400,t:["Alignment lines","Eco TPE","Carry strap","72x26"],b:"28% OFF"},
-{id:38,c:"nutrition",a:"B0113UZJE2",n:"Etekcity Food Kitchen Scale",d:"1g precision, tare function, LCD, stainless steel.",p:9.99,o:16.99,r:4.6,rv:88200,t:["1g precision","Tare","Stainless","88K reviews"],b:"41% OFF"},
-{id:39,c:"nutrition",a:"B01LZRHDAU",n:"BlenderBottle Classic V2 Shaker 28oz",d:"Leak-proof, dishwasher safe, patented BlenderBall.",p:8.79,o:12.99,r:4.7,rv:112000,t:["BlenderBall","Leak-proof","BPA free","112K rev"],b:"32% OFF"},
-{id:40,c:"nutrition",a:"B004U3Y9FU",n:"Nature Made Fish Oil 1200mg (230ct)",d:"Omega-3 EPA & DHA. Heart, brain, joints. USP verified.",p:14.99,o:22.49,r:4.7,rv:67800,t:["1200mg","USP verified","230 pills","Omega-3"],b:"33% OFF"},
-{id:41,c:"nutrition",a:"B07B5MRJJ5",n:"Hydro Flask 32 oz Water Bottle",d:"Double-wall vacuum. Cold 24h, hot 12h. BPA-free.",p:32.95,o:44.95,r:4.7,rv:52400,t:["32 oz","24h cold","12h hot","BPA-free"],b:"27% OFF"},
-{id:42,c:"nutrition",a:"B0093ISTNS",n:"Contigo AUTOSEAL West Loop 20oz",d:"AUTOSEAL leak-proof, vacuum insulated, car-fit.",p:16.79,o:24.00,r:4.6,rv:48900,t:["AUTOSEAL","Leak-proof","Vacuum","Car-fit"],b:"30% OFF"},
-{id:43,c:"apparel",a:"B07CZ8HNNJ",n:"Under Armour Men's Tech 2.0 Tee",d:"Ultra-soft HeatGear, quick-dry, moisture-wick, anti-odor.",p:16.97,o:25.00,r:4.6,rv:78900,t:["Quick-dry","Anti-odor","HeatGear","Ultra-soft"],b:"32% OFF"},
-{id:44,c:"apparel",a:"B0BN3L66FL",n:"ASICS Men's Gel-Venture 9 Shoes",d:"Trail running, GEL cushioning, OrthoLite sockliner.",p:49.95,o:70.00,r:4.5,rv:34500,t:["GEL cushion","OrthoLite","Trail-ready","Durable"],b:"29% OFF"},
-{id:45,c:"apparel",a:"B074M3JJVL",n:"Fit Active Sports Workout Gloves",d:"Padded palm, breathable mesh, wrist support strap.",p:12.97,o:19.97,r:4.4,rv:18200,t:["Padded palm","Breathable","Wrist strap","Anti-slip"],b:"35% OFF"},
-{id:46,c:"apparel",a:"B09NMXBPF8",n:"BALEAF Men's Running Shorts 5\"",d:"Built-in liner, zipper pocket, quick-dry.",p:19.99,o:28.99,r:4.5,rv:24600,t:["Liner","Zipper pocket","Quick-dry","5 inch"],b:"31% OFF"},
-{id:47,c:"cardio",a:"B0B2M61PVN",n:"Sunny Health Indoor Cycling Bike",d:"Magnetic resistance, heavy flywheel, adjustable, LCD.",p:249.00,o:399.00,r:4.4,rv:16800,t:["Magnetic","Heavy flywheel","LCD","Adjustable"],b:"38% OFF"},
-{id:48,c:"cardio",a:"B01KZMHEEW",n:"Sunny Health Mini Stepper + Bands",d:"Compact stair stepper, adjustable resistance, LCD.",p:49.99,o:79.99,r:4.3,rv:28400,t:["Compact","Bands","LCD","Adjustable"],b:"38% OFF"},
-{id:49,c:"cardio",a:"B0016BQFSS",n:"Stamina Under-Desk Elliptical",d:"Low-impact under-desk elliptical. Adjustable tension.",p:89.00,o:119.00,r:4.2,rv:12400,t:["Under-desk","Low-impact","LCD","Adjustable"],b:"25% OFF"},
-{id:50,c:"equipment",a:"B0CWQ2MTC7",n:"Niceday Steppers for Exercise",d:"Mini stepper with bands, LCD display, 330 lb cap.",p:69.99,o:99.99,r:4.4,rv:8200,t:["330 lb cap","Bands","LCD","Compact"],b:"30% OFF"},
+const BOOKS = [
+  {
+    id: 1,
+    price: 5.00,
+    title: "Book Title — $5",
+    author: "Author Name",
+    desc: "Description coming soon.",
+    tag: "Budget Pick",
+    color: "#e8ddd3",
+    accent: "#8b7355",
+    img: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop",
+    link: "#"
+  },
+  {
+    id: 2,
+    price: 10.00,
+    title: "Book Title — $10",
+    author: "Author Name",
+    desc: "Description coming soon.",
+    tag: "Great Value",
+    color: "#d5e0d5",
+    accent: "#4a6741",
+    img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop",
+    link: "#"
+  },
+  {
+    id: 3,
+    price: 20.00,
+    title: "Book Title — $20",
+    author: "Author Name",
+    desc: "Description coming soon.",
+    tag: "Editor's Pick",
+    color: "#d4dce8",
+    accent: "#3d5a80",
+    img: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop",
+    link: "#"
+  },
+  {
+    id: 4,
+    price: 50.00,
+    title: "Book Title — $50",
+    author: "Author Name",
+    desc: "Description coming soon.",
+    tag: "Premium",
+    color: "#e8d5d5",
+    accent: "#8b4049",
+    img: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&h=600&fit=crop",
+    link: "#"
+  },
+  {
+    id: 5,
+    price: 100.00,
+    title: "Book Title — $100",
+    author: "Author Name",
+    desc: "Description coming soon.",
+    tag: "Collector's Edition",
+    color: "#d5d0e0",
+    accent: "#5b4a80",
+    img: "https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=400&h=600&fit=crop",
+    link: "#"
+  }
 ];
 
-const CATS={all:{l:"All Deals",i:"🔥"},wearables:{l:"Wearables",i:"⌚"},equipment:{l:"Equipment",i:"🏋️"},supplements:{l:"Supplements",i:"🥤"},recovery:{l:"Recovery",i:"🧊"},yoga:{l:"Yoga",i:"🧘"},nutrition:{l:"Nutrition",i:"🥗"},apparel:{l:"Apparel",i:"👟"},cardio:{l:"Cardio",i:"🏃"}};
+function App() {
+  const [hovered, setHovered] = useState(null);
 
-function App(){
-  const [filter,setFilter]=useState("all");
-  const [expanded,setExpanded]=useState(null);
-  const filtered=filter==="all"?P:P.filter(p=>p.c===filter);
-  const disc=(o,n)=>Math.round((1-n/o)*100);
-  const fmtR=n=>n>=1000?(n/1000).toFixed(1)+"k":n;
-  const ticker=P.slice(0,12).map(p=>`${CATS[p.c]?.i||"🔥"} ${p.n} — ${disc(p.o,p.p)}% OFF`);
+  return (
+    <div style={{minHeight:"100vh"}}>
 
-  // Track image index per category
-  const catIdx={};
-  const getCatIdx=(cat)=>{catIdx[cat]=(catIdx[cat]||0);return catIdx[cat]++;}
-
-  return(
-    <div>
-      {/* HEADER */}
-      <div style={{position:"fixed",top:0,width:"100%",zIndex:200,background:"rgba(17,17,17,.95)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(255,255,255,.06)"}}>
-        <div style={{maxWidth:1200,margin:"0 auto",padding:"0 20px",height:50,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <div style={{display:"flex",alignItems:"center",gap:6}}>
-            <span style={{fontSize:"1.3rem"}}>💪</span>
-            <span style={{fontFamily:"'Bebas Neue'",fontSize:"1.35rem",color:"#fff",letterSpacing:1.5}}>FITZONE</span>
-            <span style={{background:"#ff3b30",color:"#fff",fontSize:".48rem",fontWeight:800,padding:"2px 6px",borderRadius:3}}>DEALS</span>
+      {/* ── HEADER ── */}
+      <header style={{position:"fixed",top:0,width:"100%",zIndex:100,background:"rgba(250,248,245,.92)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(0,0,0,.06)"}}>
+        <div style={{maxWidth:1100,margin:"0 auto",padding:"0 24px",height:60,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <span style={{fontSize:"1.4rem"}}>📚</span>
+            <span style={{fontFamily:"'Playfair Display'",fontSize:"1.4rem",fontWeight:800,letterSpacing:"-0.5px"}}>BookVault</span>
           </div>
-          <div style={{display:"flex",gap:2}}>
-            {["all","equipment","supplements","wearables","recovery"].map(k=>(
-              <button key={k} onClick={()=>setFilter(k)} style={{background:filter===k?"#ff3b30":"transparent",color:filter===k?"#fff":"rgba(255,255,255,.5)",border:"none",padding:"4px 10px",borderRadius:6,fontSize:".7rem",fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{CATS[k]?.l}</button>
-            ))}
+          <nav style={{display:"flex",gap:24,fontSize:".85rem",fontWeight:500,color:"#888"}}>
+            <a href="#picks" style={{textDecoration:"none",color:"inherit",transition:"color .2s"}}>Our Picks</a>
+            <a href="#about" style={{textDecoration:"none",color:"inherit"}}>About</a>
+          </nav>
+        </div>
+      </header>
+
+      {/* ── HERO ── */}
+      <section style={{paddingTop:120,paddingBottom:80,textAlign:"center",position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:800,height:800,borderRadius:"50%",background:"radial-gradient(circle,rgba(212,165,116,.08) 0%,transparent 70%)",pointerEvents:"none"}} />
+        <div style={{maxWidth:660,margin:"0 auto",padding:"0 24px",position:"relative"}}>
+          <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"#f0ebe4",padding:"6px 16px",borderRadius:20,fontSize:".72rem",fontWeight:700,color:"#8b7355",textTransform:"uppercase",letterSpacing:"1.5px",marginBottom:28}}>
+            ✦ Curated with care
           </div>
+          <h1 style={{fontFamily:"'Playfair Display'",fontSize:"clamp(2.4rem,5vw,3.6rem)",fontWeight:800,lineHeight:1.1,letterSpacing:"-1px",marginBottom:20,color:"#1a1a1a"}}>
+            A book for every<br/><span style={{fontStyle:"italic",color:"#8b7355"}}>budget & taste</span>
+          </h1>
+          <p style={{fontSize:"1.05rem",color:"#777",maxWidth:440,margin:"0 auto 36px",lineHeight:1.7,fontWeight:400}}>
+            Five handpicked reads at five price points. No clutter, no algorithms — just great books worth your time and money.
+          </p>
+          <a href="#picks" style={{display:"inline-flex",alignItems:"center",gap:8,background:"#1a1a1a",color:"#fff",padding:"14px 32px",borderRadius:50,fontSize:".88rem",fontWeight:700,textDecoration:"none",transition:"all .3s",boxShadow:"0 4px 20px rgba(0,0,0,.15)"}}>
+            Explore the collection ↓
+          </a>
         </div>
-      </div>
+      </section>
 
-      {/* HERO */}
-      <div style={{position:"relative",height:"78vh",minHeight:440,maxHeight:660,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
-        <video autoPlay muted loop playsInline style={{position:"absolute",top:"50%",left:"50%",minWidth:"100%",minHeight:"100%",transform:"translate(-50%,-50%)",objectFit:"cover"}}>
-          <source src="https://videos.pexels.com/video-files/3209237/3209237-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
-        </video>
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,.3) 40%,rgba(0,0,0,.75) 100%)"}}/>
-        <div style={{position:"relative",zIndex:2,textAlign:"center",maxWidth:620,padding:"0 20px"}}>
-          <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,59,48,.12)",border:"1px solid rgba(255,59,48,.25)",padding:"5px 14px",borderRadius:30,fontSize:".68rem",fontWeight:700,color:"#ff6b61",textTransform:"uppercase",letterSpacing:1,marginBottom:18}}>
-            <span style={{width:6,height:6,background:"#ff3b30",borderRadius:"50%",animation:"pulse 1.5s infinite"}}/> {P.length}+ live deals · Updated daily
-          </div>
-          <h1 style={{fontFamily:"'Bebas Neue'",fontSize:"clamp(2.4rem,7vw,4.6rem)",color:"#fff",lineHeight:.95,letterSpacing:2,marginBottom:14}}>THE BEST <span style={{color:"#ff3b30"}}>FITNESS DEALS</span><br/>ON AMAZON</h1>
-          <p style={{fontSize:"1rem",color:"rgba(255,255,255,.6)",maxWidth:420,margin:"0 auto 24px"}}>Price-verified deals with 90-day history charts. Real savings only.</p>
-          <a href="#deals" style={{display:"inline-flex",gap:8,background:"#ff3b30",color:"#fff",padding:"13px 30px",borderRadius:50,fontSize:".88rem",fontWeight:800,textDecoration:"none",boxShadow:"0 8px 28px rgba(255,59,48,.35)",fontFamily:"inherit"}}>Browse Deals ↓</a>
-        </div>
-        <div style={{position:"absolute",bottom:0,left:0,right:0,zIndex:3,background:"rgba(17,17,17,.85)",backdropFilter:"blur(16px)"}}>
-          <div style={{maxWidth:1200,margin:"0 auto",padding:"11px 20px",display:"flex",justifyContent:"center",gap:32,flexWrap:"wrap"}}>
-            {[[P.length+"+","Deals"],["24/7","Tracking"],["90-day","Charts"],["$0","Extra"]].map(([v,l],i)=>(
-              <div key={i} style={{textAlign:"center"}}>
-                <strong style={{fontFamily:"'Bebas Neue'",fontSize:"1.15rem",color:"#fff",display:"block"}}>{v}</strong>
-                <span style={{fontSize:".58rem",color:"rgba(255,255,255,.4)",textTransform:"uppercase",letterSpacing:1,fontWeight:700}}>{l}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* TICKER */}
-      <div style={{background:"#111",color:"#ff3b30",padding:"7px 0",overflow:"hidden",whiteSpace:"nowrap"}}>
-        <div style={{display:"inline-block",animation:"scroll 55s linear infinite",fontSize:".68rem",fontWeight:800,textTransform:"uppercase",letterSpacing:.8}}>
-          {[...ticker,...ticker].join("     ★     ")}
-        </div>
-      </div>
-
-      {/* DEALS */}
-      <div id="deals" style={{maxWidth:1200,margin:"0 auto",padding:"28px 20px 10px"}}>
-        <h2 style={{fontFamily:"'Bebas Neue'",fontSize:"1.7rem",letterSpacing:1.5,lineHeight:1}}>TODAY'S <span style={{color:"#ff3b30"}}>BEST DEALS</span></h2>
-        <p style={{fontSize:".78rem",color:"#888",marginTop:2}}>{filtered.length} deals · Click any card for 90-day price chart</p>
-        <div style={{display:"flex",gap:5,flexWrap:"wrap",margin:"12px 0 18px"}}>
-          {Object.entries(CATS).map(([k,v])=>{
-            const cnt=k==="all"?P.length:P.filter(x=>x.c===k).length;
-            return cnt>0&&(
-              <button key={k} onClick={()=>setFilter(k)} style={{background:filter===k?"#111":"#fff",color:filter===k?"#fff":"#666",border:"1.5px solid "+(filter===k?"#111":"#e0dcd5"),padding:"6px 13px",borderRadius:6,fontSize:".74rem",fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>
-                {v.i} {v.l} <span style={{fontSize:".58rem",opacity:.5}}>({cnt})</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* GRID */}
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"0 20px 40px",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:12}}>
-        {filtered.map((p,idx)=>{
-          const open=expanded===p.id;
-          const d=disc(p.o,p.p);
-          return(
-            <div key={p.id} className="card" style={{background:"#fff",border:"1px solid #e5e2dc",borderRadius:10,overflow:"hidden",display:"flex",flexDirection:"column",transition:"all .3s",animation:"fadeUp .4s ease forwards"}}>
-              <div style={{display:"flex"}}>
-                {/* PRODUCT IMAGE */}
-                <div className="prod-img" style={{backgroundImage:`url(${getImg(p.c,idx)})`}}>
-                  <div style={{position:"absolute",bottom:8,left:8,zIndex:1,display:"flex",gap:3}}>
-                    <span style={{fontSize:".52rem",fontWeight:800,padding:"2px 6px",borderRadius:3,textTransform:"uppercase",background:p.b?.includes("OFF")?"#ff3b30":p.b==="Best Seller"?"#111":"#f59e0b",color:"#fff",backdropFilter:"blur(4px)"}}>{p.b}</span>
-                  </div>
-                  {d>=25&&<div style={{position:"absolute",top:8,right:8,zIndex:1,background:"rgba(230,245,236,.95)",color:"#1b7a3d",fontSize:".56rem",fontWeight:800,padding:"3px 6px",borderRadius:4}}>SAVE ${(p.o-p.p).toFixed(0)}</div>}
-                </div>
-                {/* INFO */}
-                <div style={{flex:1,padding:"12px 14px 8px",minWidth:0}}>
-                  <div style={{fontSize:".62rem",textTransform:"uppercase",letterSpacing:1.2,color:"#ff3b30",fontWeight:800,marginBottom:3}}>{CATS[p.c]?.i} {p.c}</div>
-                  <div style={{fontSize:".9rem",fontWeight:800,lineHeight:1.2,marginBottom:4,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{p.n}</div>
-                  <div style={{fontSize:".68rem",color:"#999",marginBottom:5}}>
-                    <span style={{color:"#f59e0b"}}>{"★".repeat(Math.floor(p.r))}{p.r%1>=.5?"½":""}</span> {p.r} · {fmtR(p.rv)} reviews
-                  </div>
-                  <p style={{fontSize:".76rem",color:"#666",lineHeight:1.45,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{p.d}</p>
-                </div>
-              </div>
-
-              <div style={{padding:"4px 14px 8px",display:"flex",gap:3,flexWrap:"wrap"}}>
-                {p.t.map((x,i)=><span key={i} style={{fontSize:".6rem",fontWeight:700,background:"#f2f0ec",color:"#555",padding:"2px 7px",borderRadius:4}}>✓ {x}</span>)}
-              </div>
-
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",borderTop:"1px solid #f0eeea",background:"#fafaf8"}}>
-                <div style={{display:"flex",alignItems:"baseline",gap:6}}>
-                  <span style={{fontFamily:"'Bebas Neue'",fontSize:"1.5rem"}}>${p.p.toFixed(2)}</span>
-                  <span style={{fontSize:".74rem",color:"#bbb",textDecoration:"line-through"}}>${p.o.toFixed(2)}</span>
-                </div>
-                <span style={{fontSize:".66rem",fontWeight:800,background:"#e6f5ec",color:"#1b7a3d",padding:"3px 7px",borderRadius:4}}>Save {d}%</span>
-              </div>
-
-              <button onClick={()=>setExpanded(open?null:p.id)} style={{width:"100%",padding:7,background:"transparent",border:"none",borderTop:"1px dashed #e5e2dc",fontSize:".72rem",fontWeight:700,color:"#007aff",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",gap:4}}>
-                📊 {open?"Hide":"View"} Price History <span style={{fontSize:".55rem",transition:"transform .2s",transform:open?"rotate(180deg)":"",display:"inline-block"}}>▼</span>
-              </button>
-              {open&&<Chart op={p.o} np={p.p} id={p.a}/>}
-
-              <a href={`https://www.amazon.com/s?k=${encodeURIComponent(p.n)}&tag=fitzone05a-20`} target="_blank" rel="nofollow noopener" className="cta-btn"
-                style={{display:"flex",alignItems:"center",justifyContent:"center",gap:5,margin:"0 14px 14px",padding:"11px",background:"#111",color:"#fff",borderRadius:7,fontSize:".82rem",fontWeight:800,textDecoration:"none",transition:"background .2s"}}>
-                View Deal on Amazon →
-              </a>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* TRUST */}
-      <div style={{background:"#111",padding:"40px 20px"}}>
-        <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:18,textAlign:"center"}}>
-          {[["📊","Price Charts","90-day history for every product"],["🐪","CamelCamelCamel","Links to full price tracking"],["📈","Keepa","Detailed Amazon analytics"],["🤖","AI Scanner","Auto-finds new deals daily"],["🛡️","$0 Extra","Same Amazon price always"]].map(([i,t,d],x)=>(
-            <div key={x}>
-              <div style={{fontSize:"1.4rem",marginBottom:6}}>{i}</div>
-              <h3 style={{fontSize:".76rem",fontWeight:800,color:"#fff",marginBottom:2}}>{t}</h3>
-              <p style={{fontSize:".66rem",color:"rgba(255,255,255,.3)",lineHeight:1.4}}>{d}</p>
-            </div>
+      {/* ── PRICE TABS ── */}
+      <div id="picks" style={{maxWidth:1100,margin:"0 auto",padding:"0 24px 16px"}}>
+        <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap",justifyContent:"center"}}>
+          {[5,10,20,50,100].map(p => (
+            <a key={p} href={`#book-${p}`} style={{padding:"8px 20px",borderRadius:30,border:"1.5px solid #e0dbd5",fontSize:".82rem",fontWeight:700,color:"#555",textDecoration:"none",transition:"all .2s",background: "#fff"}}>
+              ${p}
+            </a>
           ))}
         </div>
       </div>
 
-      {/* NEWSLETTER */}
-      <div style={{padding:"44px 20px",textAlign:"center",borderTop:"1px solid #e5e2dc"}}>
-        <h2 style={{fontFamily:"'Bebas Neue'",fontSize:"1.5rem",letterSpacing:1.5,marginBottom:5}}>🔔 NEVER MISS A DEAL</h2>
-        <p style={{color:"#888",fontSize:".84rem",marginBottom:16}}>Top deals in your inbox every morning.</p>
-        <div style={{display:"flex",gap:8,maxWidth:360,margin:"0 auto"}}>
-          <input placeholder="you@email.com" style={{flex:1,padding:"11px 14px",border:"2px solid #e5e2dc",borderRadius:8,fontSize:".84rem",fontFamily:"inherit"}}/>
-          <button onClick={()=>alert("Subscribed! 💪")} style={{padding:"11px 20px",background:"#ff3b30",color:"#fff",border:"none",borderRadius:8,fontWeight:800,fontSize:".8rem",cursor:"pointer",fontFamily:"inherit"}}>Subscribe</button>
-        </div>
-      </div>
+      {/* ── BOOKS ── */}
+      <section style={{maxWidth:1100,margin:"0 auto",padding:"20px 24px 60px"}}>
+        <div style={{display:"flex",flexDirection:"column",gap:32}}>
+          {BOOKS.map((book, idx) => (
+            <div key={book.id} id={`book-${book.price}`} className="book-card"
+              style={{
+                display:"flex",
+                flexDirection: idx % 2 === 0 ? "row" : "row-reverse",
+                background:"#fff",
+                borderRadius:16,
+                overflow:"hidden",
+                border:"1px solid rgba(0,0,0,.06)",
+                transition:"all .4s ease",
+                animation:`fadeUp .5s ease forwards`,
+                animationDelay:`${idx * 0.1}s`,
+                minHeight:320,
+              }}
+              onMouseEnter={()=>setHovered(book.id)}
+              onMouseLeave={()=>setHovered(null)}>
 
-      {/* FOOTER */}
-      <div style={{borderTop:"1px solid #e5e2dc",padding:"24px 20px",textAlign:"center"}}>
-        <div style={{maxWidth:560,margin:"0 auto 10px",padding:"12px 14px",background:"#f2f0ec",borderRadius:8,fontSize:".62rem",color:"#999",lineHeight:1.6}}>
-          <strong>Affiliate Disclosure:</strong> FitZone participates in the Amazon Services LLC Associates Program. We earn from qualifying purchases at no cost to you. Price charts are generated estimates; visit CamelCamelCamel or Keepa for official tracking.
+              {/* Book Image */}
+              <div style={{
+                width:"40%",minWidth:200,
+                backgroundImage:`url(${book.img})`,
+                backgroundSize:"cover",
+                backgroundPosition:"center",
+                position:"relative",
+                overflow:"hidden"
+              }}>
+                <div style={{position:"absolute",inset:0,background:`linear-gradient(180deg,transparent 50%,rgba(0,0,0,.3) 100%)`}} />
+                <div style={{position:"absolute",top:16,left:16,background:book.accent,color:"#fff",fontSize:".65rem",fontWeight:800,padding:"4px 12px",borderRadius:20,textTransform:"uppercase",letterSpacing:"1px"}}>
+                  {book.tag}
+                </div>
+                <div style={{position:"absolute",bottom:16,left:16,fontFamily:"'Playfair Display'",fontSize:"2.2rem",fontWeight:800,color:"#fff",textShadow:"0 2px 8px rgba(0,0,0,.3)"}}>
+                  ${book.price.toFixed(0)}
+                </div>
+              </div>
+
+              {/* Book Info */}
+              <div style={{flex:1,padding:"36px 40px",display:"flex",flexDirection:"column",justifyContent:"center"}}>
+                <div style={{fontSize:".7rem",textTransform:"uppercase",letterSpacing:"2px",color:book.accent,fontWeight:700,marginBottom:10}}>
+                  {book.tag}
+                </div>
+                <h2 style={{fontFamily:"'Playfair Display'",fontSize:"1.6rem",fontWeight:700,marginBottom:6,lineHeight:1.25,letterSpacing:"-0.5px"}}>
+                  {book.title}
+                </h2>
+                <p style={{fontSize:".88rem",color:"#999",marginBottom:16,fontStyle:"italic"}}>
+                  by {book.author}
+                </p>
+                <p style={{fontSize:".9rem",color:"#666",lineHeight:1.7,marginBottom:24,maxWidth:420}}>
+                  {book.desc}
+                </p>
+                <div style={{display:"flex",alignItems:"center",gap:16}}>
+                  <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+                    <span style={{fontFamily:"'Playfair Display'",fontSize:"1.8rem",fontWeight:800,color:"#1a1a1a"}}>${book.price.toFixed(2)}</span>
+                  </div>
+                  <a href={book.link} target="_blank" rel="nofollow noopener" className="cta"
+                    style={{display:"inline-flex",alignItems:"center",gap:6,padding:"12px 28px",background:book.accent,color:"#fff",borderRadius:10,fontSize:".84rem",fontWeight:700,textDecoration:"none",transition:"all .3s"}}>
+                    View on Amazon →
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-        <p style={{fontSize:".7rem",color:"#bbb"}}>© 2026 FitZone Deals · Privacy · Terms · Contact</p>
-      </div>
+      </section>
+
+      {/* ── ABOUT ── */}
+      <section id="about" style={{background:"#1a1a1a",padding:"64px 24px",color:"#fff"}}>
+        <div style={{maxWidth:700,margin:"0 auto",textAlign:"center"}}>
+          <h2 style={{fontFamily:"'Playfair Display'",fontSize:"1.8rem",fontWeight:700,marginBottom:16}}>Why BookVault?</h2>
+          <p style={{fontSize:".92rem",color:"rgba(255,255,255,.5)",lineHeight:1.7,marginBottom:40}}>
+            We believe great reading shouldn't require endless scrolling. We pick one outstanding book at each price point, so you spend less time searching and more time reading.
+          </p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:24}}>
+            {[
+              ["📖","Hand-curated","Every book is personally read and recommended."],
+              ["💰","Every budget","From $5 paperbacks to $100 collector's editions."],
+              ["⭐","Quality first","Only books with outstanding reviews and lasting value."]
+            ].map(([ico,t,d],i) => (
+              <div key={i} style={{padding:"24px 16px",background:"rgba(255,255,255,.04)",borderRadius:12,border:"1px solid rgba(255,255,255,.06)"}}>
+                <div style={{fontSize:"1.4rem",marginBottom:10}}>{ico}</div>
+                <h3 style={{fontSize:".84rem",fontWeight:700,marginBottom:6}}>{t}</h3>
+                <p style={{fontSize:".76rem",color:"rgba(255,255,255,.35)",lineHeight:1.5}}>{d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── NEWSLETTER ── */}
+      <section style={{padding:"56px 24px",textAlign:"center",borderTop:"1px solid rgba(0,0,0,.06)"}}>
+        <h2 style={{fontFamily:"'Playfair Display'",fontSize:"1.5rem",fontWeight:700,marginBottom:8}}>📬 New picks, monthly</h2>
+        <p style={{color:"#888",fontSize:".88rem",marginBottom:20}}>Get our latest book recommendations delivered to your inbox.</p>
+        <div style={{display:"flex",gap:8,maxWidth:380,margin:"0 auto"}}>
+          <input placeholder="you@email.com" style={{flex:1,padding:"12px 16px",border:"2px solid #e5e2dc",borderRadius:10,fontSize:".86rem",fontFamily:"inherit",background:"#fff"}} />
+          <button onClick={()=>alert("Subscribed! 📚")} style={{padding:"12px 22px",background:"#1a1a1a",color:"#fff",border:"none",borderRadius:10,fontWeight:700,fontSize:".84rem",cursor:"pointer",fontFamily:"inherit"}}>Subscribe</button>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{borderTop:"1px solid rgba(0,0,0,.06)",padding:"28px 24px",textAlign:"center"}}>
+        <div style={{maxWidth:500,margin:"0 auto 12px",padding:"14px 16px",background:"#f0ebe4",borderRadius:10,fontSize:".64rem",color:"#999",lineHeight:1.6}}>
+          <strong>Affiliate Disclosure:</strong> BookVault participates in the Amazon Services LLC Associates Program. We earn from qualifying purchases at no additional cost to you.
+        </div>
+        <p style={{fontSize:".72rem",color:"#bbb"}}>© 2026 BookVault · Privacy · Terms</p>
+      </footer>
+
     </div>
   );
 }
 
-ReactDOM.render(<App/>,document.getElementById('root'));
+ReactDOM.render(<App/>, document.getElementById('root'));
 </script>
 </body>
 </html>
