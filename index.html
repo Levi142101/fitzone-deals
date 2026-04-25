@@ -7,94 +7,40 @@
 <meta name="description" content="Handpicked book recommendations at every price point. Find your next great read.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',-apple-system,sans-serif;background:#faf8f5;color:#1a1a1a;-webkit-font-smoothing:antialiased}
 ::selection{background:#d4a574;color:#fff}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.book-card{transition:all .4s ease}
 .book-card:hover{transform:translateY(-6px)!important;box-shadow:0 20px 50px rgba(0,0,0,.12)!important}
-.cta:hover{background:#1a1a1a!important;color:#fff!important}
+.buy-btn{transition:all .3s ease}
+.buy-btn:hover{transform:scale(1.05)!important;box-shadow:0 6px 20px rgba(0,0,0,.2)!important}
 input:focus{border-color:#d4a574!important;outline:none}
+@media(max-width:768px){
+  .book-row,.book-row-reverse{flex-direction:column!important}
+  .book-img{width:100%!important;min-height:220px!important}
+  .book-info{padding:24px 20px!important}
+}
 </style>
 </head>
 <body>
 <div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <script type="text/babel">
-const {useState} = React;
-
 const BOOKS = [
-  {
-    id: 1,
-    price: 5.00,
-    title: "Book Title — $5",
-    author: "Author Name",
-    desc: "Description coming soon.",
-    tag: "Budget Pick",
-    color: "#e8ddd3",
-    accent: "#8b7355",
-    img: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop",
-    link: "#"
-  },
-  {
-    id: 2,
-    price: 10.00,
-    title: "Book Title — $10",
-    author: "Author Name",
-    desc: "Description coming soon.",
-    tag: "Great Value",
-    color: "#d5e0d5",
-    accent: "#4a6741",
-    img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop",
-    link: "#"
-  },
-  {
-    id: 3,
-    price: 20.00,
-    title: "Book Title — $20",
-    author: "Author Name",
-    desc: "Description coming soon.",
-    tag: "Editor's Pick",
-    color: "#d4dce8",
-    accent: "#3d5a80",
-    img: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop",
-    link: "#"
-  },
-  {
-    id: 4,
-    price: 50.00,
-    title: "Book Title — $50",
-    author: "Author Name",
-    desc: "Description coming soon.",
-    tag: "Premium",
-    color: "#e8d5d5",
-    accent: "#8b4049",
-    img: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&h=600&fit=crop",
-    link: "#"
-  },
-  {
-    id: 5,
-    price: 100.00,
-    title: "Book Title — $100",
-    author: "Author Name",
-    desc: "Description coming soon.",
-    tag: "Collector's Edition",
-    color: "#d5d0e0",
-    accent: "#5b4a80",
-    img: "https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=400&h=600&fit=crop",
-    link: "#"
-  }
+  {id:1,price:5,title:"Book Title — $5",author:"Author Name",desc:"Description coming soon.",tag:"Budget Pick",accent:"#8b7355",img:"https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop",stripe:"https://buy.stripe.com/9B600j3rGboB5ab5Mw9ws00"},
+  {id:2,price:10,title:"Book Title — $10",author:"Author Name",desc:"Description coming soon.",tag:"Great Value",accent:"#4a6741",img:"https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop",stripe:"https://buy.stripe.com/8x23cv7HWakxcCD1wg9ws01"},
+  {id:3,price:20,title:"Book Title — $20",author:"Author Name",desc:"Description coming soon.",tag:"Editor's Pick",accent:"#3d5a80",img:"https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop",stripe:"https://buy.stripe.com/8x28wP6DScsF4672Ak9ws02"},
+  {id:4,price:50,title:"Book Title — $50",author:"Author Name",desc:"Description coming soon.",tag:"Premium",accent:"#8b4049",img:"https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&h=600&fit=crop",stripe:"https://buy.stripe.com/6oUcN5e6kdwJfOPcaU9ws03"},
+  {id:5,price:100,title:"Book Title — $100",author:"Author Name",desc:"Description coming soon.",tag:"Collector's Edition",accent:"#5b4a80",img:"https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=400&h=600&fit=crop",stripe:"https://buy.stripe.com/3cIfZhbYcboB5ab4Is9ws04"}
 ];
 
-function App() {
-  const [hovered, setHovered] = useState(null);
-
-  return (
+function App(){
+  return(
     <div style={{minHeight:"100vh"}}>
-
-      {/* ── HEADER ── */}
       <header style={{position:"fixed",top:0,width:"100%",zIndex:100,background:"rgba(250,248,245,.92)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(0,0,0,.06)"}}>
         <div style={{maxWidth:1100,margin:"0 auto",padding:"0 24px",height:60,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -102,102 +48,51 @@ function App() {
             <span style={{fontFamily:"'Playfair Display'",fontSize:"1.4rem",fontWeight:800,letterSpacing:"-0.5px"}}>BookVault</span>
           </div>
           <nav style={{display:"flex",gap:24,fontSize:".85rem",fontWeight:500,color:"#888"}}>
-            <a href="#picks" style={{textDecoration:"none",color:"inherit",transition:"color .2s"}}>Our Picks</a>
+            <a href="#picks" style={{textDecoration:"none",color:"inherit"}}>Our Picks</a>
             <a href="#about" style={{textDecoration:"none",color:"inherit"}}>About</a>
           </nav>
         </div>
       </header>
 
-      {/* ── HERO ── */}
       <section style={{paddingTop:120,paddingBottom:80,textAlign:"center",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:800,height:800,borderRadius:"50%",background:"radial-gradient(circle,rgba(212,165,116,.08) 0%,transparent 70%)",pointerEvents:"none"}} />
+        <div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:800,height:800,borderRadius:"50%",background:"radial-gradient(circle,rgba(212,165,116,.08) 0%,transparent 70%)",pointerEvents:"none"}}/>
         <div style={{maxWidth:660,margin:"0 auto",padding:"0 24px",position:"relative"}}>
-          <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"#f0ebe4",padding:"6px 16px",borderRadius:20,fontSize:".72rem",fontWeight:700,color:"#8b7355",textTransform:"uppercase",letterSpacing:"1.5px",marginBottom:28}}>
-            ✦ Curated with care
-          </div>
-          <h1 style={{fontFamily:"'Playfair Display'",fontSize:"clamp(2.4rem,5vw,3.6rem)",fontWeight:800,lineHeight:1.1,letterSpacing:"-1px",marginBottom:20,color:"#1a1a1a"}}>
-            A book for every<br/><span style={{fontStyle:"italic",color:"#8b7355"}}>budget & taste</span>
-          </h1>
-          <p style={{fontSize:"1.05rem",color:"#777",maxWidth:440,margin:"0 auto 36px",lineHeight:1.7,fontWeight:400}}>
-            Five handpicked reads at five price points. No clutter, no algorithms — just great books worth your time and money.
-          </p>
-          <a href="#picks" style={{display:"inline-flex",alignItems:"center",gap:8,background:"#1a1a1a",color:"#fff",padding:"14px 32px",borderRadius:50,fontSize:".88rem",fontWeight:700,textDecoration:"none",transition:"all .3s",boxShadow:"0 4px 20px rgba(0,0,0,.15)"}}>
-            Explore the collection ↓
-          </a>
+          <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"#f0ebe4",padding:"6px 16px",borderRadius:20,fontSize:".72rem",fontWeight:700,color:"#8b7355",textTransform:"uppercase",letterSpacing:"1.5px",marginBottom:28}}>✦ Curated with care</div>
+          <h1 style={{fontFamily:"'Playfair Display'",fontSize:"clamp(2.4rem,5vw,3.6rem)",fontWeight:800,lineHeight:1.1,letterSpacing:"-1px",marginBottom:20}}>A book for every<br/><span style={{fontStyle:"italic",color:"#8b7355"}}>budget & taste</span></h1>
+          <p style={{fontSize:"1.05rem",color:"#777",maxWidth:440,margin:"0 auto 36px",lineHeight:1.7}}>Five handpicked reads at five price points. No clutter, no algorithms — just great books worth your time and money.</p>
+          <a href="#picks" style={{display:"inline-flex",alignItems:"center",gap:8,background:"#1a1a1a",color:"#fff",padding:"14px 32px",borderRadius:50,fontSize:".88rem",fontWeight:700,textDecoration:"none",boxShadow:"0 4px 20px rgba(0,0,0,.15)"}}>Explore the collection ↓</a>
         </div>
       </section>
 
-      {/* ── PRICE TABS ── */}
-      <div id="picks" style={{maxWidth:1100,margin:"0 auto",padding:"0 24px 16px"}}>
+      <div id="picks" style={{maxWidth:1100,margin:"0 auto",padding:"0 24px 20px"}}>
         <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap",justifyContent:"center"}}>
-          {[5,10,20,50,100].map(p => (
-            <a key={p} href={`#book-${p}`} style={{padding:"8px 20px",borderRadius:30,border:"1.5px solid #e0dbd5",fontSize:".82rem",fontWeight:700,color:"#555",textDecoration:"none",transition:"all .2s",background: "#fff"}}>
-              ${p}
-            </a>
-          ))}
+          {BOOKS.map(b=><a key={b.id} href={"#book-"+b.price} style={{padding:"8px 20px",borderRadius:30,border:"1.5px solid #e0dbd5",fontSize:".82rem",fontWeight:700,color:"#555",textDecoration:"none",background:"#fff"}}>${b.price}</a>)}
         </div>
       </div>
 
-      {/* ── BOOKS ── */}
       <section style={{maxWidth:1100,margin:"0 auto",padding:"20px 24px 60px"}}>
         <div style={{display:"flex",flexDirection:"column",gap:32}}>
-          {BOOKS.map((book, idx) => (
-            <div key={book.id} id={`book-${book.price}`} className="book-card"
-              style={{
-                display:"flex",
-                flexDirection: idx % 2 === 0 ? "row" : "row-reverse",
-                background:"#fff",
-                borderRadius:16,
-                overflow:"hidden",
-                border:"1px solid rgba(0,0,0,.06)",
-                transition:"all .4s ease",
-                animation:`fadeUp .5s ease forwards`,
-                animationDelay:`${idx * 0.1}s`,
-                minHeight:320,
-              }}
-              onMouseEnter={()=>setHovered(book.id)}
-              onMouseLeave={()=>setHovered(null)}>
-
-              {/* Book Image */}
-              <div style={{
-                width:"40%",minWidth:200,
-                backgroundImage:`url(${book.img})`,
-                backgroundSize:"cover",
-                backgroundPosition:"center",
-                position:"relative",
-                overflow:"hidden"
-              }}>
-                <div style={{position:"absolute",inset:0,background:`linear-gradient(180deg,transparent 50%,rgba(0,0,0,.3) 100%)`}} />
-                <div style={{position:"absolute",top:16,left:16,background:book.accent,color:"#fff",fontSize:".65rem",fontWeight:800,padding:"4px 12px",borderRadius:20,textTransform:"uppercase",letterSpacing:"1px"}}>
-                  {book.tag}
-                </div>
-                <div style={{position:"absolute",bottom:16,left:16,fontFamily:"'Playfair Display'",fontSize:"2.2rem",fontWeight:800,color:"#fff",textShadow:"0 2px 8px rgba(0,0,0,.3)"}}>
-                  ${book.price.toFixed(0)}
-                </div>
+          {BOOKS.map((book,idx)=>(
+            <div key={book.id} id={"book-"+book.price} className={"book-card "+(idx%2===0?"book-row":"book-row-reverse")}
+              style={{display:"flex",flexDirection:idx%2===0?"row":"row-reverse",background:"#fff",borderRadius:16,overflow:"hidden",border:"1px solid rgba(0,0,0,.06)",minHeight:320,animation:"fadeUp .5s ease forwards",animationDelay:idx*0.1+"s"}}>
+              <div className="book-img" style={{width:"40%",minWidth:200,backgroundImage:"url("+book.img+")",backgroundSize:"cover",backgroundPosition:"center",position:"relative",overflow:"hidden"}}>
+                <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(0,0,0,.3) 100%)"}}/>
+                <div style={{position:"absolute",top:16,left:16,background:book.accent,color:"#fff",fontSize:".65rem",fontWeight:800,padding:"4px 12px",borderRadius:20,textTransform:"uppercase",letterSpacing:"1px"}}>{book.tag}</div>
+                <div style={{position:"absolute",bottom:16,left:16,fontFamily:"'Playfair Display'",fontSize:"2.2rem",fontWeight:800,color:"#fff",textShadow:"0 2px 8px rgba(0,0,0,.3)"}}>${book.price}</div>
               </div>
-
-              {/* Book Info */}
-              <div style={{flex:1,padding:"36px 40px",display:"flex",flexDirection:"column",justifyContent:"center"}}>
-                <div style={{fontSize:".7rem",textTransform:"uppercase",letterSpacing:"2px",color:book.accent,fontWeight:700,marginBottom:10}}>
-                  {book.tag}
+              <div className="book-info" style={{flex:1,padding:"36px 40px",display:"flex",flexDirection:"column",justifyContent:"center"}}>
+                <div style={{fontSize:".7rem",textTransform:"uppercase",letterSpacing:"2px",color:book.accent,fontWeight:700,marginBottom:10}}>{book.tag}</div>
+                <h2 style={{fontFamily:"'Playfair Display'",fontSize:"1.6rem",fontWeight:700,marginBottom:6,lineHeight:1.25,letterSpacing:"-0.5px"}}>{book.title}</h2>
+                <p style={{fontSize:".88rem",color:"#999",marginBottom:16,fontStyle:"italic"}}>by {book.author}</p>
+                <p style={{fontSize:".9rem",color:"#666",lineHeight:1.7,marginBottom:24,maxWidth:420}}>{book.desc}</p>
+                <div style={{display:"flex",alignItems:"center",gap:16,flexWrap:"wrap"}}>
+                  <span style={{fontFamily:"'Playfair Display'",fontSize:"1.8rem",fontWeight:800}}>${book.price.toFixed(2)}</span>
+                  <a href={book.stripe} target="_blank" rel="noopener noreferrer" className="buy-btn" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"14px 32px",background:book.accent,color:"#fff",borderRadius:10,fontSize:".88rem",fontWeight:700,textDecoration:"none",letterSpacing:".3px"}}>🛒 Buy Now</a>
                 </div>
-                <h2 style={{fontFamily:"'Playfair Display'",fontSize:"1.6rem",fontWeight:700,marginBottom:6,lineHeight:1.25,letterSpacing:"-0.5px"}}>
-                  {book.title}
-                </h2>
-                <p style={{fontSize:".88rem",color:"#999",marginBottom:16,fontStyle:"italic"}}>
-                  by {book.author}
-                </p>
-                <p style={{fontSize:".9rem",color:"#666",lineHeight:1.7,marginBottom:24,maxWidth:420}}>
-                  {book.desc}
-                </p>
-                <div style={{display:"flex",alignItems:"center",gap:16}}>
-                  <div style={{display:"flex",alignItems:"baseline",gap:6}}>
-                    <span style={{fontFamily:"'Playfair Display'",fontSize:"1.8rem",fontWeight:800,color:"#1a1a1a"}}>${book.price.toFixed(2)}</span>
-                  </div>
-                  <a href={book.link} target="_blank" rel="nofollow noopener" className="cta"
-                    style={{display:"inline-flex",alignItems:"center",gap:6,padding:"12px 28px",background:book.accent,color:"#fff",borderRadius:10,fontSize:".84rem",fontWeight:700,textDecoration:"none",transition:"all .3s"}}>
-                    View on Amazon →
-                  </a>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginTop:14}}>
+                  <span style={{fontSize:".7rem",color:"#bbb"}}>Secure payment via</span>
+                  <span style={{fontSize:".72rem",fontWeight:700,color:"#635bff"}}>Stripe</span>
+                  <span style={{fontSize:".7rem",color:"#bbb"}}>· Visa, Mastercard, Amex & more</span>
                 </div>
               </div>
             </div>
@@ -205,19 +100,24 @@ function App() {
         </div>
       </section>
 
-      {/* ── ABOUT ── */}
+      <section style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,.06)",borderBottom:"1px solid rgba(0,0,0,.06)",padding:"40px 24px"}}>
+        <div style={{maxWidth:800,margin:"0 auto",display:"flex",justifyContent:"center",gap:40,flexWrap:"wrap",textAlign:"center"}}>
+          {[["🔒","Secure Checkout","256-bit SSL encryption"],["💳","All Cards Accepted","Visa, Mastercard, Amex, Discover"],["⚡","Instant Access","Download link sent immediately"],["🛡️","Money Back","30-day refund guarantee"]].map(([ico,t,d],i)=>(
+            <div key={i} style={{flex:"1",minWidth:150}}>
+              <div style={{fontSize:"1.4rem",marginBottom:8}}>{ico}</div>
+              <h3 style={{fontSize:".82rem",fontWeight:700,marginBottom:4}}>{t}</h3>
+              <p style={{fontSize:".72rem",color:"#999",lineHeight:1.4}}>{d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section id="about" style={{background:"#1a1a1a",padding:"64px 24px",color:"#fff"}}>
         <div style={{maxWidth:700,margin:"0 auto",textAlign:"center"}}>
           <h2 style={{fontFamily:"'Playfair Display'",fontSize:"1.8rem",fontWeight:700,marginBottom:16}}>Why BookVault?</h2>
-          <p style={{fontSize:".92rem",color:"rgba(255,255,255,.5)",lineHeight:1.7,marginBottom:40}}>
-            We believe great reading shouldn't require endless scrolling. We pick one outstanding book at each price point, so you spend less time searching and more time reading.
-          </p>
+          <p style={{fontSize:".92rem",color:"rgba(255,255,255,.5)",lineHeight:1.7,marginBottom:40}}>We believe great reading shouldn't require endless scrolling. We pick one outstanding book at each price point, so you spend less time searching and more time reading.</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:24}}>
-            {[
-              ["📖","Hand-curated","Every book is personally read and recommended."],
-              ["💰","Every budget","From $5 paperbacks to $100 collector's editions."],
-              ["⭐","Quality first","Only books with outstanding reviews and lasting value."]
-            ].map(([ico,t,d],i) => (
+            {[["📖","Hand-curated","Every book is personally read and recommended."],["💰","Every budget","From $5 paperbacks to $100 collector's editions."],["⭐","Quality first","Only books with outstanding reviews and lasting value."]].map(([ico,t,d],i)=>(
               <div key={i} style={{padding:"24px 16px",background:"rgba(255,255,255,.04)",borderRadius:12,border:"1px solid rgba(255,255,255,.06)"}}>
                 <div style={{fontSize:"1.4rem",marginBottom:10}}>{ico}</div>
                 <h3 style={{fontSize:".84rem",fontWeight:700,marginBottom:6}}>{t}</h3>
@@ -228,29 +128,23 @@ function App() {
         </div>
       </section>
 
-      {/* ── NEWSLETTER ── */}
       <section style={{padding:"56px 24px",textAlign:"center",borderTop:"1px solid rgba(0,0,0,.06)"}}>
         <h2 style={{fontFamily:"'Playfair Display'",fontSize:"1.5rem",fontWeight:700,marginBottom:8}}>📬 New picks, monthly</h2>
         <p style={{color:"#888",fontSize:".88rem",marginBottom:20}}>Get our latest book recommendations delivered to your inbox.</p>
         <div style={{display:"flex",gap:8,maxWidth:380,margin:"0 auto"}}>
-          <input placeholder="you@email.com" style={{flex:1,padding:"12px 16px",border:"2px solid #e5e2dc",borderRadius:10,fontSize:".86rem",fontFamily:"inherit",background:"#fff"}} />
+          <input placeholder="you@email.com" style={{flex:1,padding:"12px 16px",border:"2px solid #e5e2dc",borderRadius:10,fontSize:".86rem",fontFamily:"inherit",background:"#fff"}}/>
           <button onClick={()=>alert("Subscribed! 📚")} style={{padding:"12px 22px",background:"#1a1a1a",color:"#fff",border:"none",borderRadius:10,fontWeight:700,fontSize:".84rem",cursor:"pointer",fontFamily:"inherit"}}>Subscribe</button>
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
       <footer style={{borderTop:"1px solid rgba(0,0,0,.06)",padding:"28px 24px",textAlign:"center"}}>
-        <div style={{maxWidth:500,margin:"0 auto 12px",padding:"14px 16px",background:"#f0ebe4",borderRadius:10,fontSize:".64rem",color:"#999",lineHeight:1.6}}>
-          <strong>Affiliate Disclosure:</strong> BookVault participates in the Amazon Services LLC Associates Program. We earn from qualifying purchases at no additional cost to you.
-        </div>
-        <p style={{fontSize:".72rem",color:"#bbb"}}>© 2026 BookVault · Privacy · Terms</p>
+        <p style={{fontSize:".72rem",color:"#bbb",marginBottom:8}}>All payments are processed securely through Stripe. We never store your card information.</p>
+        <p style={{fontSize:".72rem",color:"#bbb"}}>© 2026 BookVault · Privacy · Terms · Contact</p>
       </footer>
-
     </div>
   );
 }
-
-ReactDOM.render(<App/>, document.getElementById('root'));
+ReactDOM.render(<App/>,document.getElementById('root'));
 </script>
 </body>
 </html>
